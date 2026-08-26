@@ -3,3 +3,4 @@
 certs/
 keys/
 .env
+backups/

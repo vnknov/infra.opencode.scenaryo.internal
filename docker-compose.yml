@@ -12,8 +12,9 @@ services:
     environment:
       NODE_EXTRA_CA_CERTS: /certs/root-ca.crt
       KEY_STORE: ${KEY_STORE:-/home/miniai1/devbox}
+      WORKSPACE: ${WORKSPACE:-/home/miniai1/devbox/workspace}
     volumes:
-      - ./workspace:/home/dev/workspace
+      - ${WORKSPACE}:/home/dev/workspace
       - devbox-home:/home/dev
       #- /mnt/t9:/mnt/t9:ro
       - ${KEY_STORE}/laptop.pub:/home/dev/.ssh/authorized_keys.tmp:ro
