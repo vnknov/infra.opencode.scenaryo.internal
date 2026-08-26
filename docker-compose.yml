@@ -40,7 +40,7 @@ services:
     container_name: opencode
     hostname: opencode
     user: dev
-    working_dir: /home/dev/workspace
+    working_dir: ${WORKSPACE}
     environment:
       OPENCODE_SERVER_USERNAME: vince
       OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD}
@@ -51,9 +51,10 @@ services:
       OBSIDIAN_API_KEY: ${OBSIDIAN_API_KEY}
       NODE_EXTRA_CA_CERTS: /certs/root-ca.crt
       KEY_STORE: ${KEY_STORE:-/home/miniai1/devbox}
+      WORKSPACE: ${WORKSPACE:-/home/miniai1/devbox/workspace/}
     volumes:
       - ./opencode.json:/home/dev/.config/opencode/opencode.json
-      - ./workspace:/home/dev/workspace
+      - ${WORKSPACE}:/home/dev/workspace
       - devbox-home:/home/dev          # teilt sich auth.json mit devbox
       #- /mnt/t9:/mnt/t9:ro
       - ${KEY_STORE}/certs/root-ca.crt:/certs/root-ca.crt:ro
