@@ -19,7 +19,7 @@
   "mcp": {
     "obsidian": {
       "type": "remote",
-      "url": "https://thinkstationpgx-d37b.local:27124/mcp/",
+      "url": "https://vmserver.scenaryo.internal:27124/mcp/",
       "enabled": true,
       "oauth": false,
       "timeout": 10000,
@@ -34,7 +34,7 @@
     },
     "channels": {
       "type": "remote",
-      "url": "http://192.168.40.139:3000/mcp",
+      "url": "http://vmserver.scenaryo.internal:3001/mcp",
       "enabled": true,
       "oauth": false,
       "timeout": 30000,
