@@ -1,0 +1,4 @@
+opencode.scenaryo.internal {
+    tls internal
+    reverse_proxy opencode:4096
+}

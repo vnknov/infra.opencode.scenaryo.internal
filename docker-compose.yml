@@ -1,0 +1,83 @@
+services:
+  devbox:
+    build:
+      context: .
+      args:
+        USERNAME: dev
+    container_name: devbox
+    hostname: devbox
+    ports:
+      - "2222:22"
+      # 4096 NICHT mehr auf den Host — Caddy terminiert das:
+    environment:
+      NODE_EXTRA_CA_CERTS: /certs/root-ca.crt
+    volumes:
+      - ./workspace:/home/dev/workspace
+      - devbox-home:/home/dev
+      #- /mnt/t9:/mnt/t9:ro
+      - ./keys/laptop.pub:/home/dev/.ssh/authorized_keys.tmp:ro
+      - ./keys/github/id_ed25519:/home/dev/.ssh/id_github:ro
+      - ./keys/github/id_ed25519.pub:/home/dev/.ssh/id_github.pub:ro
+      - ./certs/root-ca.crt:/certs/root-ca.crt:ro
+    restart: unless-stopped
+    networks: [ocnet]
+    command: >
+      bash -c "
+      cp /home/dev/.ssh/authorized_keys.tmp /home/dev/.ssh/authorized_keys &&
+      chmod 600 /home/dev/.ssh/authorized_keys &&
+      chown dev:dev /home/dev/.ssh/authorized_keys &&
+      install -o dev -g dev -m 600 /home/dev/.ssh/id_github /home/dev/.ssh/github_key &&
+      install -o dev -g dev -m 644 /home/dev/.ssh/id_github.pub /home/dev/.ssh/github_key.pub &&
+      exec /usr/sbin/sshd -D"
+
+  opencode:
+    build:
+      context: .
+      args:
+        USERNAME: dev
+    container_name: opencode
+    hostname: opencode
+    user: dev
+    working_dir: /home/dev/workspace
+    environment:
+      OPENCODE_SERVER_USERNAME: vince
+      OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD}
+      CHANNELS_MCP_TOKEN: ${CHANNELS_MCP_TOKEN}
+      HOME: /home/dev
+      OBSIDIAN_API_KEY: ${OBSIDIAN_API_KEY}
+      NODE_EXTRA_CA_CERTS: /certs/root-ca.crt
+    volumes:
+      - ./opencode.json:/home/dev/.config/opencode/opencode.json
+      - ./workspace:/home/dev/workspace
+      - devbox-home:/home/dev          # teilt sich auth.json mit devbox
+      #- /mnt/t9:/mnt/t9:ro
+      - ./certs/root-ca.crt:/certs/root-ca.crt:ro
+    restart: unless-stopped
+    networks: [ocnet]
+    expose:
+      - "4096"                         # nur intern, nicht auf den Host
+   # command: ["opencode", "serve", "--hostname", "0.0.0.0", "--port", "4096"]
+    command: ["bash", "-c", "cd /home/dev/workspace && exec opencode serve --hostname 0.0.0.0 --port 4096"]
+    extra_hosts:
+      - "vmserver.scenaryo.internal:192.168.42.41"
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [ocnet]
+    depends_on: [opencode]
+
+networks:
+  ocnet: {}
+
+volumes:
+  devbox-home:
+  caddy_data:
+  caddy_config:
