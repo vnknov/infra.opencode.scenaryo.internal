@@ -11,6 +11,7 @@
 - `caddy` publishes host port `443` and reverse-proxies `opencode.scenaryo.internal` to `opencode:4096` with `tls internal`.
 - `./workspace` is bind-mounted to `/home/dev/workspace`; `devbox-home` is shared by `devbox` and `opencode` so auth state persists across both.
 - `opencode.json` is mounted into the container as `/home/dev/.config/opencode/opencode.json`.
+- LM Studio is configured as provider `lmstudio` at `https://inference.scenaryo.internal/v1`; the container trusts it through `NODE_EXTRA_CA_CERTS=/certs/root-ca.crt`.
 
 ## Required Local Inputs
 - Compose references ignored local paths: `.env`, `certs/root-ca.crt`, `keys/laptop.pub`, `keys/github/id_ed25519`, and `keys/github/id_ed25519.pub`.
