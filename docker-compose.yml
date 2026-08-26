@@ -11,14 +11,15 @@ services:
       # 4096 NICHT mehr auf den Host — Caddy terminiert das:
     environment:
       NODE_EXTRA_CA_CERTS: /certs/root-ca.crt
+      KEY_STORE: ${KEY_STORE:-/home/miniai1/devbox}
     volumes:
       - ./workspace:/home/dev/workspace
       - devbox-home:/home/dev
       #- /mnt/t9:/mnt/t9:ro
-      - /home/miniai1/devbox/keys/laptop.pub:/home/dev/.ssh/authorized_keys.tmp:ro
-      - /home/miniai1/devbox/keys/github/id_ed25519:/home/dev/.ssh/id_github:ro
-      - /home/miniai1/devbox/keys/github/id_ed25519.pub:/home/dev/.ssh/id_github.pub:ro
-      - /home/miniai1/devbox/certs/root-ca.crt:/certs/root-ca.crt:ro
+      - ${KEY_STORE}/laptop.pub:/home/dev/.ssh/authorized_keys.tmp:ro
+      - ${KEY_STORE}/github/id_ed25519:/home/dev/.ssh/id_github:ro
+      - ${KEY_STORE}/github/id_ed25519.pub:/home/dev/.ssh/id_github.pub:ro
+      - ${KEY_STORE}/certs/root-ca.crt:/certs/root-ca.crt:ro
     restart: unless-stopped
     networks: [ocnet]
     command: >
@@ -48,12 +49,13 @@ services:
       HOME: /home/dev
       OBSIDIAN_API_KEY: ${OBSIDIAN_API_KEY}
       NODE_EXTRA_CA_CERTS: /certs/root-ca.crt
+      KEY_STORE: ${KEY_STORE:-/home/miniai1/devbox}
     volumes:
       - ./opencode.json:/home/dev/.config/opencode/opencode.json
       - ./workspace:/home/dev/workspace
       - devbox-home:/home/dev          # teilt sich auth.json mit devbox
       #- /mnt/t9:/mnt/t9:ro
-      - /home/miniai1/devbox/certs/root-ca.crt:/certs/root-ca.crt:ro
+      - ${KEY_STORE}/certs/root-ca.crt:/certs/root-ca.crt:ro
     restart: unless-stopped
     networks: [ocnet]
     expose:
