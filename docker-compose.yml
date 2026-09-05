@@ -108,6 +108,10 @@ services:
       # Internal CA
       - ${CERT_STORE:-/home/miniai1/devbox/certs}/root-ca.crt:/certs/root-ca.crt:ro
 
+      # QA and Prod env files
+      - ${KEY_STORE:-/home/miniai1/devbox/keys}/qa.env:/home/dev/.ssh/lithosurfer/qa/.env:ro
+      - ${KEY_STORE:-/home/miniai1/devbox/keys}/prod.env:/home/dev/.ssh/lithosurfer/prod/.env:ro
+
       # Optional storage
       # - /mnt/t9:/mnt/t9:ro
 
@@ -126,6 +130,7 @@ services:
         eval $(ssh-agent -s) &&
         ssh-add /home/dev/.ssh/github_key 2>/dev/null ||
         true &&
+        mkdir -p /home/dev/.ssh/lithosurfer/qa /home/dev/.ssh/lithosurfer/prod &&
         exec opencode serve \
           --hostname 0.0.0.0 \
           --port 4096
